@@ -1,5 +1,6 @@
 #include "image.h"
 #include <string.h>
+#include <stdlib.h>
 
 #include "stb_image.h"
 #include "stb_image_write.h"

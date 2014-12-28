@@ -34,10 +34,13 @@ DEF_OPTS = [('BOOST_PYTHON_SOURCE', None),
             ('BOOST_MULTI_INDEX_DISABLE_SERIALIZATION', None),
             ('BOOST_PYTHON_STATIC_LIB', None)]
 PYVERSION = sys.version[0] + sys.version[2]
-LIBS = ['python' + PYVERSION]
+LIBS = []
 ARCH = plat.architecture()[0]
 ARCH_64 = ARCH == '64bit'
 WIN32 = sys.platform == 'win32'
+
+if WIN32:
+    LIBS += ['python' + PYVERSION]
 
 class pil_lite_build_ext(build_ext):
     def build_extensions(self):
@@ -54,8 +57,7 @@ class pil_lite_build_ext(build_ext):
         for e in self.extensions:
             e.define_macros += defs
             if MSVC:
-                e.extra_compile_args = ['/EHsc', '/Ox']
-            print(self.compiler)
+                e.extra_compile_args = ['/EHsc']
         build_ext.build_extensions(self)
 
 mod = Extension('PilLiteExt', sources=SRC, include_dirs=INC_DIRS, define_macros=DEF_OPTS, libraries=LIBS)
