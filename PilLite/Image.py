@@ -1,7 +1,7 @@
 import os
 
 try:
-    from PilLite import openImage, writeImageJpeg, writeImagePng
+    from PilLiteExt import openImage, writeImageJpeg, writeImagePng
 except ImportError as v:
     raise
 

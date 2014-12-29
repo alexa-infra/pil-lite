@@ -1,2 +1,6 @@
 ^src/_build/
 glob:*.pyc
+^build/
+^local/
+^PilLite.egg-info/
+^dist/

@@ -66,7 +66,7 @@ void writeImagePng(Image* img, object& python_file)
     delete compress;
 }
 
-BOOST_PYTHON_MODULE(PilLite)
+BOOST_PYTHON_MODULE(PilLiteExt)
 {
     def("openImage", &openImage, return_value_policy<manage_new_object>());
     def("writeImageJpeg", &writeImageJpeg);
