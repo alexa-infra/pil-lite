@@ -72,10 +72,10 @@ BOOST_PYTHON_MODULE(PilLite)
     def("writeImageJpeg", &writeImageJpeg);
     def("writeImagePng", &writeImagePng);
     class_<Image>("Image", no_init)
-        .def("isOk", &Image::isOk)
+        .add_property("isOk", &Image::isOk)
         .add_property("width", &Image::width)
         .add_property("height", &Image::height)
         .add_property("componentCount", &Image::componentCount)
-        .def("failureReason", &Image::failureReason)
+        .add_property("failureReason", &Image::failureReason)
         ;
 }
