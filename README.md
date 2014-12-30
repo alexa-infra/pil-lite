@@ -1,15 +1,17 @@
 **PilLite** - lightweight and limited version of PIL/Pillow library
 
-* No native external dependencies (like libjpeg, zlib etc)
+* no native external dependencies (like libjpeg, zlib etc)
 * supports only trivial subset of formats (JPEG, PNG, 8bit per channel)
-* No image editing functionality (as well as many other things)
+* no image editing functionality (as well as many other things)
 * basically interface has only **open** and **save** functions
 
 
+```python
     from PilLite import Image
     img = Image.open('ich.png')
     print(img.size)
     img.save('ich.jpg')
+```
 
 
 * supports python 2/3 (tested only 2.7 and 3.3)
