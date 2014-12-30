@@ -23,6 +23,10 @@ def recursive_glob(treeroot, pattern):
         results.extend(os.path.join(base, f) for f in goodfiles)
     return results
 
+def _read(file):
+    with open(file, 'rb') as f:
+        return f.read()
+
 SRC_PATH = 'src'
 THIRDPARTY_PATH = os.path.join(SRC_PATH, 'thirdparty')
 
@@ -127,8 +131,20 @@ JPEG_COMPRESSOR_LIB = ('jpeg-compressor', {'sources':JPEG_COMPRESSOR_SRC})
 mod = Extension('PilLiteExt', sources=SRC, include_dirs=INC_DIRS,
                 define_macros=DEF_OPTS, libraries=LIBS)
 
-setup(name='PilLite',
+NAME = 'PilLite'
+PIL_LITE_VERSION = '0.0.1'
+
+setup(name=NAME,
+   version=PIL_LITE_VERSION,
+   description='Python Imaging Library Lite',
+   long_description=_read('README.md'),
+   author='Alexey Vasilyev',
+   author_email='alexa.infra@gmail.com',
+   license='MIT',
    ext_modules=[mod],
    packages=find_packages(),
    libraries=[STB_LIB, JPEG_COMPRESSOR_LIB],
-   cmdclass={'build_ext':pil_lite_build_ext, 'build_clib':pil_build_clib})
+   cmdclass={'build_ext':pil_lite_build_ext, 'build_clib':pil_build_clib},
+   zip_safe=True,
+   include_package_data=True,
+   keywords=["Imaging"])

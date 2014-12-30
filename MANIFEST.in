@@ -1,0 +1,8 @@
+include *.py
+include *.md
+recursive-include PilLite *.py
+recursive-include src *.h
+recursive-include src *.c
+recursive-include src *.cpp
+recursive-include src *.hpp
+recursive-include src *.txt
