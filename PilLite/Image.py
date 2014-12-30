@@ -60,3 +60,13 @@ class Image(object):
             raise ValueError("bad format %r" % format)
         if infp != fp:
             fp.close()
+
+    def resize(self, size):
+        w, h = size
+        image = Image()
+        image.im = self.im.resize(w, h)
+        return image
+
+    def thumbnail(self, size):
+        w, h = size
+        self.im = self.im.resize(w, h)

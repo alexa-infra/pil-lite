@@ -77,5 +77,6 @@ BOOST_PYTHON_MODULE(PilLiteExt)
         .add_property("height", &Image::height)
         .add_property("componentCount", &Image::componentCount)
         .add_property("failureReason", &Image::failureReason)
+        .def("resize", &Image::resize, return_value_policy<manage_new_object>())
         ;
 }

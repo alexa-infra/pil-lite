@@ -11,6 +11,7 @@ namespace inf
     Image(const u8* data, u32 size);
     Image(const Image& img);
     Image(u32 w, u32 h, u32 comp);
+    void operator=(const Image& img);
     ~Image();
     bool isOk() const { return buffer_ != NULL; }
     const char* failureReason() const;
@@ -20,13 +21,13 @@ namespace inf
     u32 rowStride() const { return width_ * componentCount_; }
     const u8* buffer() const { return buffer_; }
     u32 size() const { return width_ * height_ * componentCount_; }
+    Image* resize(u32 w, u32 h) const;
   private:
     u32 width_;
     u32 height_;
     u32 componentCount_;
     u8* buffer_;
     bool ownMemory_;
-    void operator=(const Image&);
   };
 
   class ImageCompressed
