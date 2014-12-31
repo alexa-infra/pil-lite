@@ -1,0 +1,16 @@
+language: python
+
+python:
+  - 3.4
+  - 3.3
+  - 2.7
+
+install:
+  - "travis_retry pip install nose"
+
+script:
+  - "rm *.pyd"
+  - "python setup.py clean"
+  - "python setup.py build_clib"
+  - "python setup.py build_ext --inplace"
+  - nosetests
