@@ -21,3 +21,5 @@ img.save('ich.jpg')
   * [stb_image.h, stb_image_write.h, stb_image_resize.h libraries](https://github.com/nothings/stb)
   * [jpeg-compressor](https://code.google.com/p/jpeg-compressor)
   * [Boost.Python]( http://www.boost.org/doc/libs/1_57_0/libs/python/doc/)
+
+[![Build Status](https://travis-ci.org/alexa-infra/pil-lite.svg)](https://travis-ci.org/alexa-infra/pil-lite)
