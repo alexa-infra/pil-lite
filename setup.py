@@ -131,7 +131,7 @@ JPEG_COMPRESSOR_LIB = ('jpeg-compressor', {'sources':JPEG_COMPRESSOR_SRC})
 mod = Extension('PilLiteExt', sources=SRC, include_dirs=INC_DIRS,
                 define_macros=DEF_OPTS, libraries=LIBS)
 
-NAME = 'PilLite'
+NAME = 'Pil-Lite'
 PIL_LITE_VERSION = '0.0.1'
 
 setup(name=NAME,
@@ -142,6 +142,7 @@ setup(name=NAME,
    author_email='alexa.infra@gmail.com',
    license='MIT',
    url = 'https://github.com/alexa-infra/pil-lite',
+   download_url = 'https://github.com/alexa-infra/pil-lite/tarball/' + PIL_LITE_VERSION,
    ext_modules=[mod],
    packages=find_packages(),
    libraries=[STB_LIB, JPEG_COMPRESSOR_LIB],
@@ -149,7 +150,7 @@ setup(name=NAME,
    zip_safe=True,
    include_package_data=True,
    keywords=["Imaging"],
-   platform='Any',
+   platforms='Any',
    classifiers=[
      "Development Status :: 2 - Pre-Alpha",
      "Topic :: Multimedia :: Graphics",
