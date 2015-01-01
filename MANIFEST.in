@@ -6,3 +6,5 @@ recursive-include src *.c
 recursive-include src *.cpp
 recursive-include src *.hpp
 recursive-include src *.txt
+recursive-include test *.py
+recursive-include test/data image.*
