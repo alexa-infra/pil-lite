@@ -75,6 +75,8 @@ class pil_lite_build_ext(build_ext):
             e.define_macros += defs
             if MSVC:
                 e.extra_compile_args = ['/EHsc']
+            if MINGW:
+	        e.extra_compile_args = ['-Wno-unused-local-typedefs']
         build_ext.build_extensions(self)
 
 class pil_build_clib(build_clib):
@@ -95,6 +97,8 @@ class pil_build_clib(build_clib):
                             'include_dirs':inc_dir}
         if MSVC:
             BOOST_PYTHON_CFG['extra_compile_args'] = ['/EHsc']
+	if MINGW:
+	    BOOST_PYTHON_CFG['extra_compile_args'] = ['-Wno-unused-local-typedefs']
         BOOST_PYTHON_LIB = ('boost-python', BOOST_PYTHON_CFG)
         self.libraries.append(BOOST_PYTHON_LIB)
 
