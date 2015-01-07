@@ -79,11 +79,12 @@ class TestBasic:
     in_file = os.path.join(self.initial, 'image.png')
     img = Image.open(in_file)
     new_size = (128, 90)
+    exp_size = (125, 90)
     img.thumbnail(new_size)
-    assert img.size == new_size
+    assert img.size == exp_size
     out_file = os.path.join(self.temp, 'image.png')
     img.save(out_file)
     assert os.path.exists(out_file)
     img = Image.open(out_file)
-    assert img.size == new_size
+    assert img.size == exp_size
 

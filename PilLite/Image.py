@@ -1,9 +1,6 @@
 import os
 
-try:
-    from PilLiteExt import openImage, writeImageJpeg, writeImagePng
-except ImportError as v:
-    raise
+from PilLiteExt import openImage, writeImageJpeg, writeImagePng
 
 try:
     import builtins
@@ -12,6 +9,12 @@ except ImportError:
     builtins = __builtin__
 
 def open(fp, mode='r'):
+    """
+    Opens, reads and decodes the given image file.
+
+    You can use a file object instead of a filename. File object must
+    implement ``read`` method, and be opened in binary mode.
+    """
     if mode != 'r':
         raise ValueError("bad mode %r" % mode)
     if not hasattr(fp, 'read'):
@@ -32,9 +35,18 @@ class Image(object):
 
     @property
     def size(self):
+        """ Returns the size of image, a tuple (width, height) """
         return (self.im.width, self.im.height)
 
     def save(self, fp, format=None, **kwargs):
+        """
+	Saves this image under the given filename. If no format is
+	specified, the format to use is determined from the filename
+	extension, if possible.
+	
+	You can use a file object instead of a filename. The file object
+	must implement the ``write`` method, and be opened in binary mode.
+	"""
         infp = fp
         if not hasattr(fp, 'write'):
             filename = fp
@@ -62,11 +74,24 @@ class Image(object):
             fp.close()
 
     def resize(self, size):
+        """ Returns a resized copy of this image. """
         w, h = size
         image = Image()
         image.im = self.im.resize(w, h)
         return image
 
     def thumbnail(self, size):
+        """
+	Make this image into a thumbnail. This method modifies the
+	image to contain a thumbnail version of itself, no larger than
+	the given size and preserving original aspect ratio.
+	"""
         w, h = size
-        self.im = self.im.resize(w, h)
+	x, y = self.size
+	if x > w:
+	    y = int(max(y * w / x, 1))
+	    x = int(w)
+	if y > h:
+	    x = int(max(x * h / y, 1))
+	    y = int(h)
+        self.im = self.im.resize(x, y)
