@@ -97,8 +97,8 @@ class pil_build_clib(build_clib):
                             'include_dirs':inc_dir}
         if MSVC:
             BOOST_PYTHON_CFG['extra_compile_args'] = ['/EHsc']
-    if MINGW:
-        BOOST_PYTHON_CFG['extra_compile_args'] = ['-Wno-unused-local-typedefs']
+        if MINGW:
+            BOOST_PYTHON_CFG['extra_compile_args'] = ['-Wno-unused-local-typedefs']
         BOOST_PYTHON_LIB = ('boost-python', BOOST_PYTHON_CFG)
         self.libraries.append(BOOST_PYTHON_LIB)
 
