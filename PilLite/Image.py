@@ -93,6 +93,6 @@ class Image(object):
             x = int(w)
         if y > h:
             x = int(max(x * h / y, 1))
-        y = int(h)
+            y = int(h)
         self.im = self.im.resize(x, y)
 
