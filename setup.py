@@ -136,7 +136,7 @@ mod = Extension('PilLiteExt', sources=SRC, include_dirs=INC_DIRS,
                 define_macros=DEF_OPTS, libraries=LIBS)
 
 NAME = 'Pil-Lite'
-PIL_LITE_VERSION = '0.0.1'
+PIL_LITE_VERSION = '0.0.2'
 
 setup(name=NAME,
    version=PIL_LITE_VERSION,
