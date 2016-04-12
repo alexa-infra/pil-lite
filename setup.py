@@ -25,7 +25,7 @@ def recursive_glob(treeroot, pattern):
 
 def _read(file):
     with open(file, 'rb') as f:
-        return f.read()
+        return str(f.read())
 
 SRC_PATH = 'src'
 THIRDPARTY_PATH = os.path.join(SRC_PATH, 'thirdparty')

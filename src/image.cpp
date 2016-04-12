@@ -43,20 +43,20 @@ Image::Image(const Image& img)
 
 void Image::operator=(const Image& img)
 {
-    if (ownMemory_) {
-        delete[] buffer_;
-    }
-    else {
-        if (buffer_ != NULL)
-            stbi_image_free(buffer_);
-    }
-    width_ = img.width_;
-    height_ = img.height_;
-    componentCount_ = img.componentCount_;
-    ownMemory_ = true;
-    u32 s = width_ * height_ * componentCount_;
-    buffer_ = new unsigned char[s];
-    memcpy(buffer_, img.buffer_, s);
+  if (ownMemory_) {
+    delete[] buffer_;
+  }
+  else {
+    if (buffer_ != NULL)
+      stbi_image_free(buffer_);
+  }
+  width_ = img.width_;
+  height_ = img.height_;
+  componentCount_ = img.componentCount_;
+  ownMemory_ = true;
+  u32 s = width_ * height_ * componentCount_;
+  buffer_ = new unsigned char[s];
+  memcpy(buffer_, img.buffer_, s);
 }
 
 Image::~Image()
@@ -76,10 +76,10 @@ const char* Image::failureReason() const
 
 Image* Image::resize(u32 w, u32 h) const
 {
-    Image* img = new Image(w, h, componentCount_);
-    stbir_resize_uint8(buffer_, width_, height_, rowStride(),
-        img->buffer_, w, h, img->rowStride(), componentCount_);
-    return img;
+  Image* img = new Image(w, h, componentCount_);
+  stbir_resize_uint8(buffer_, width_, height_, rowStride(),
+    img->buffer_, w, h, img->rowStride(), componentCount_);
+  return img;
 }
 
 static void* compress_png(const Image& img, u32 &size)
