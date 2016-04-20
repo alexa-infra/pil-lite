@@ -196,7 +196,7 @@ static struct PyMethodDef methods[] = {
     { NULL, NULL }
 };
 
-static PyTypeObject Imaging_Type = {
+PyTypeObject Imaging_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "Imaging",                /*tp_name*/
     sizeof(ImagingObject),    /*tp_size*/
