@@ -54,7 +54,7 @@ static PyObject* openImage(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, "O", &python_file))
         return NULL;
 
-    PyObject* py_read = PyObject_GetAttrString(python_file, "read"); 
+    PyObject* py_read = PyObject_GetAttrString(python_file, "read");
     if (py_read == NULL) {
         PyErr_SetString(PyExc_AttributeError,
             "That Python file object has no 'read' attribute");
@@ -86,7 +86,7 @@ static PyObject* writeImageJpeg(PyObject* self, PyObject* args)
 
     Image* img = PyImaging_AsImaging(imgobj);
 
-    PyObject* py_write = PyObject_GetAttrString(python_file, "write"); 
+    PyObject* py_write = PyObject_GetAttrString(python_file, "write");
     if (py_write == NULL) {
         PyErr_SetString(PyExc_AttributeError,
             "That Python file object has no 'write' attribute");
@@ -119,7 +119,7 @@ static PyObject* writeImagePng(PyObject* self, PyObject* args)
 
     Image* img = PyImaging_AsImaging(imgobj);
 
-    PyObject* py_write = PyObject_GetAttrString(python_file, "write"); 
+    PyObject* py_write = PyObject_GetAttrString(python_file, "write");
     if (py_write == NULL) {
         PyErr_SetString(PyExc_AttributeError,
             "That Python file object has no 'write' attribute");
