@@ -23,9 +23,7 @@ Pil-Lite
 
   * `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
   * `jpeg-compressor <https://code.google.com/p/jpeg-compressor>`_
-  * `Boost.Python <http://www.boost.org/doc/libs/1_57_0/libs/python/doc/>`_
 
 .. image:: https://travis-ci.org/alexa-infra/pil-lite.svg
    :target: https://travis-ci.org/alexa-infra/pil-lite
    :alt: Travis CI build status
-
