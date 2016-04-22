@@ -24,7 +24,7 @@ def open(fp, mode='r'):
     else:
         img = openImage(fp)
     if not img.isOk:
-        raise IOError('file %s error: %s' % (filename if filename else fp, img.failureReason))
+        raise IOError('Image open error: %s' % img.failureReason)
     image = Image()
     image.im = img
     return image
@@ -48,6 +48,7 @@ class Image(object):
         must implement the ``write`` method, and be opened in binary mode.
         """
         infp = fp
+        filename = None
         if not hasattr(fp, 'write'):
             filename = fp
             fp = builtins.open(filename, 'wb')
