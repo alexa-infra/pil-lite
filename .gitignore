@@ -2,3 +2,7 @@ __pycache__/
 *.py[cod]
 local/
 build/
+.python-version
+Pil_Lite.egg-info/
+dist/
+src/build/
