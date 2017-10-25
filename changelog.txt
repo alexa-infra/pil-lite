@@ -1,0 +1,34 @@
+0.0.7
+
+- update stb_image, stb_image_write and stb_image_resize libraries
+- use jpeg write functionality from stb_image_write
+- remove jpeg-compressor dependency
+- bump python version to 3.6 (latest tested)
+
+0.0.6
+
+- fix GCC 5 compilation (temporary)
+
+0.0.5
+
+- fix error message if image fails
+
+0.0.4
+
+- remove boost-python dependency
+
+0.0.3
+
+- minor fixes
+
+0.0.2
+
+- thumbnail method now keeps aspect ratio
+- documentation
+
+0.0.1
+
+- first release
+- basic boost-python module and its wrapper
+- simple jpeg/png processing via stb and jpeg-compressor libs
+- development cmake build
