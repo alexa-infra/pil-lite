@@ -19,10 +19,7 @@ Pil-Lite
 
 * supports python 2/3 (tested only 2.7, 3.3 and 3.4)
 * note, *open* functionality supports more formats (like TGA, BMP - see notes in stb_image.h), and *save* supports only JPEG and PNG
-* library is existed thanks to
-
-  * `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
-  * `jpeg-compressor <https://code.google.com/p/jpeg-compressor>`_
+* library is existed thanks to `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
 
 .. image:: https://travis-ci.org/alexa-infra/pil-lite.svg
    :target: https://travis-ci.org/alexa-infra/pil-lite

@@ -24,15 +24,13 @@ SRC_PATH = 'src'
 THIRDPARTY_PATH = os.path.join(SRC_PATH, 'thirdparty')
 
 STB_PATH = os.path.join(THIRDPARTY_PATH, 'stb')
-JPEG_COMPRESSOR_PATH = os.path.join(THIRDPARTY_PATH, 'jpeg-compressor')
 
 MAIN_SRC = glob.glob(os.path.join(SRC_PATH, '*.cpp'))
 STB_SRC = glob.glob(os.path.join(STB_PATH, '*.c'))
-JPEG_COMPRESSOR_SRC = glob.glob(os.path.join(JPEG_COMPRESSOR_PATH, '*.cpp'))
 
 SRC = MAIN_SRC
 
-INC_DIRS = [SRC_PATH, THIRDPARTY_PATH, STB_PATH, JPEG_COMPRESSOR_PATH]
+INC_DIRS = [SRC_PATH, THIRDPARTY_PATH, STB_PATH]
 DEF_OPTS = []
 PYVERSION = sys.version[0] + sys.version[2]
 LIBS = ['stb', 'jpeg-compressor']
@@ -94,7 +92,6 @@ class pil_build_clib(build_clib):
                                             debug=self.debug)
 
 STB_LIB = ('stb', {'sources':STB_SRC})
-JPEG_COMPRESSOR_LIB = ('jpeg-compressor', {'sources':JPEG_COMPRESSOR_SRC})
 
 mod = Extension('PilLiteExt', sources=SRC, include_dirs=INC_DIRS,
                 define_macros=DEF_OPTS, libraries=LIBS)
@@ -113,7 +110,7 @@ setup(name=NAME,
    download_url = 'https://github.com/alexa-infra/pil-lite/tarball/' + PIL_LITE_VERSION,
    ext_modules=[mod],
    packages=find_packages(),
-   libraries=[STB_LIB, JPEG_COMPRESSOR_LIB],
+   libraries=[STB_LIB],
    cmdclass={'build_ext':pil_lite_build_ext, 'build_clib':pil_build_clib},
    zip_safe=True,
    include_package_data=True,

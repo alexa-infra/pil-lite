@@ -5,7 +5,6 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "stb_image_resize.h"
-#include "jpge.h"
 
 namespace inf {
 
@@ -82,27 +81,56 @@ Image* Image::resize(u32 w, u32 h) const
   return img;
 }
 
+struct Temp {
+  void* buffer;
+  int len;
+};
+
+static void write_bytes(void *context, void *data, int len)
+{
+  Temp* tmp = reinterpret_cast<Temp*>(context);
+  if (tmp->buffer) {
+    memcpy(tmp->buffer + tmp->len, data, len);
+  }
+  tmp->len += len;
+}
+
 static void* compress_png(const Image& img, u32 &size)
 {
-  return stbi_write_png_to_mem(const_cast<u8*>(img.buffer()),
-    img.rowStride(), img.width(), img.height(),
-    img.componentCount(), reinterpret_cast<int*>(&size));
+  Temp tmp;
+  tmp.buffer = NULL;
+  tmp.len = 0;
+  stbi_write_png_to_func(write_bytes, &tmp,
+      img.width(), img.height(), img.componentCount(),
+      img.buffer(), img.rowStride());
+  size = tmp.len;
+  if (tmp.len == 0)
+    return NULL;
+  tmp.buffer = malloc(tmp.len);
+  tmp.len = 0;
+  stbi_write_png_to_func(write_bytes, &tmp,
+      img.width(), img.height(), img.componentCount(),
+      img.buffer(), img.rowStride());
+  return tmp.buffer;
 }
 
 static void* compress_jpeg(const Image& img, u32 &size, u32 quality)
 {
-  size = img.size();
-  if (size < 1024) size = 1024;
-  void* buffer = malloc(size);
-  jpge::params p;
-  if (quality >= 1 && quality <= 100)
-    p.m_quality = quality;
-  if (img.componentCount() == 1)
-    p.m_subsampling = jpge::Y_ONLY;
-  jpge::compress_image_to_jpeg_file_in_memory(buffer,
-    reinterpret_cast<int&>(size), img.width(), img.height(),
-    img.componentCount(), img.buffer(), p);
-  return buffer;
+  Temp tmp;
+  tmp.buffer = NULL;
+  tmp.len = 0;
+  stbi_write_jpg_to_func(write_bytes, &tmp,
+      img.width(), img.height(), img.componentCount(),
+      img.buffer(), quality);
+  size = tmp.len;
+  if (tmp.len == 0)
+    return NULL;
+  tmp.buffer = malloc(tmp.len);
+  tmp.len = 0;
+  stbi_write_jpg_to_func(write_bytes, &tmp,
+      img.width(), img.height(), img.componentCount(),
+      img.buffer(), quality);
+  return tmp.buffer;
 }
 
 static void free_compress_image(void *buffer)
