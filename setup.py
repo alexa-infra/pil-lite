@@ -33,7 +33,7 @@ SRC = MAIN_SRC
 INC_DIRS = [SRC_PATH, THIRDPARTY_PATH, STB_PATH]
 DEF_OPTS = []
 PYVERSION = sys.version[0] + sys.version[2]
-LIBS = ['stb', 'jpeg-compressor']
+LIBS = ['stb']
 if WIN32:
     LIBS += ['python' + PYVERSION]
 
