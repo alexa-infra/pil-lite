@@ -17,7 +17,7 @@ Pil-Lite
     img.save('ich.jpg')
 
 
-* supports python 2/3 (tested only 2.7, 3.3 and 3.4)
+* supports python 2/3 (tested only 2.7, 3.3 and 3.6)
 * note, *open* functionality supports more formats (like TGA, BMP - see notes in stb_image.h), and *save* supports only JPEG and PNG
 * library is existed thanks to `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
 
