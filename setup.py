@@ -54,6 +54,7 @@ class pil_lite_build_ext(build_ext):
         compiler = self.compiler.compiler_type
         MSVC = compiler == 'msvc'
         MINGW = compiler == 'mingw32'
+        GCC = compiler == 'unix'
         defs = []
         defs += python_defines(compiler)
         for e in self.extensions:
@@ -66,6 +67,9 @@ class pil_lite_build_ext(build_ext):
 
 class pil_build_clib(build_clib):
     def build_libraries(self, libraries):
+        compiler = self.compiler.compiler_type
+        GCC = compiler == 'unix'
+        MINGW = compiler == 'mingw32'
         for (lib_name, build_info) in libraries:
             sources = build_info.get('sources')
             if sources is None or not isinstance(sources, (list, tuple)):
@@ -80,11 +84,13 @@ class pil_build_clib(build_clib):
             macros = build_info.get('macros')
             include_dirs = build_info.get('include_dirs')
             extra_args = build_info.get('extra_compile_args', [])
+            if GCC or MINGW:
+                extra_args.append('-Wno-unused-but-set-variable')
             objects = self.compiler.compile(sources,
                                             output_dir=self.build_temp,
                                             macros=macros,
                                             include_dirs=include_dirs,
-                                            extra_postargs=extra_args,
+                                            extra_preargs=extra_args,
                                             debug=self.debug)
 
             self.compiler.create_static_lib(objects, lib_name,

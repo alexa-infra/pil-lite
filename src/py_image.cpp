@@ -238,7 +238,7 @@ static PyMethodDef functions[] = {
 };
 
 static int setup_module(PyObject* m) {
-    PyObject* d = PyModule_GetDict(m);
+    PyModule_GetDict(m);
 
     /* Ready object types */
     if (PyType_Ready(&Imaging_Type) < 0)

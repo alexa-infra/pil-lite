@@ -82,8 +82,10 @@ Image* Image::resize(u32 w, u32 h) const
 }
 
 struct Temp {
-  void* buffer;
+  u8* buffer;
   int len;
+
+  Temp() : buffer(NULL), len(0) {}
 };
 
 static void write_bytes(void *context, void *data, int len)
@@ -98,39 +100,35 @@ static void write_bytes(void *context, void *data, int len)
 static void* compress_png(const Image& img, u32 &size)
 {
   Temp tmp;
-  tmp.buffer = NULL;
-  tmp.len = 0;
   stbi_write_png_to_func(write_bytes, &tmp,
       img.width(), img.height(), img.componentCount(),
       img.buffer(), img.rowStride());
   size = tmp.len;
   if (tmp.len == 0)
     return NULL;
-  tmp.buffer = malloc(tmp.len);
+  tmp.buffer = (u8*)malloc(tmp.len);
   tmp.len = 0;
   stbi_write_png_to_func(write_bytes, &tmp,
       img.width(), img.height(), img.componentCount(),
       img.buffer(), img.rowStride());
-  return tmp.buffer;
+  return (void*)tmp.buffer;
 }
 
 static void* compress_jpeg(const Image& img, u32 &size, u32 quality)
 {
   Temp tmp;
-  tmp.buffer = NULL;
-  tmp.len = 0;
   stbi_write_jpg_to_func(write_bytes, &tmp,
       img.width(), img.height(), img.componentCount(),
       img.buffer(), quality);
   size = tmp.len;
   if (tmp.len == 0)
     return NULL;
-  tmp.buffer = malloc(tmp.len);
+  tmp.buffer = (u8*)malloc(tmp.len);
   tmp.len = 0;
   stbi_write_jpg_to_func(write_bytes, &tmp,
       img.width(), img.height(), img.componentCount(),
       img.buffer(), quality);
-  return tmp.buffer;
+  return (void*)tmp.buffer;
 }
 
 static void free_compress_image(void *buffer)
