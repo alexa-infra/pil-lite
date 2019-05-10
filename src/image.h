@@ -37,6 +37,7 @@ namespace inf
 
     static ImageCompressed* Jpeg(const Image& img, u32 quality);
     static ImageCompressed* Png(const Image& img);
+    static ImageCompressed* Bmp(const Image& img);
     const void* buffer() const { return buffer_; }
     u32 size() const { return size_; }
   private:

@@ -131,6 +131,23 @@ static void* compress_jpeg(const Image& img, u32 &size, u32 quality)
   return (void*)tmp.buffer;
 }
 
+static void* compress_bmp(const Image& img, u32 &size)
+{
+  Temp tmp;
+  stbi_write_bmp_to_func(write_bytes, &tmp,
+      img.width(), img.height(), img.componentCount(),
+      img.buffer());
+  size = tmp.len;
+  if (tmp.len == 0)
+    return NULL;
+  tmp.buffer = (u8*)malloc(tmp.len);
+  tmp.len = 0;
+  stbi_write_bmp_to_func(write_bytes, &tmp,
+      img.width(), img.height(), img.componentCount(),
+      img.buffer());
+  return (void*)tmp.buffer;
+}
+
 static void free_compress_image(void *buffer)
 {
   free(buffer);
@@ -158,6 +175,13 @@ ImageCompressed* ImageCompressed::Png(const Image& img)
 {
   ImageCompressed* target = new ImageCompressed();
   target->buffer_ = compress_png(img, target->size_);
+  return target;
+}
+
+ImageCompressed* ImageCompressed::Bmp(const Image& img)
+{
+  ImageCompressed* target = new ImageCompressed();
+  target->buffer_ = compress_bmp(img, target->size_);
   return target;
 }
 
