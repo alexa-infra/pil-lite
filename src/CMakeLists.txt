@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
 project(PilLite)
 
-set(Python_ADDITIONAL_VERSIONS 3.3)
+set(Python_ADDITIONAL_VERSIONS 3.7)
 find_package(PythonLibs REQUIRED)
 
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 set(THIRDPARTY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
-
 set(STB_PATH ${THIRDPARTY_PATH}/stb)
-set(JPEG_COMPRESSOR_PATH ${THIRDPARTY_PATH}/jpeg-compressor)
 
 file(GLOB MAIN_SRC ${SRC_PATH}/*.cpp)
 file(GLOB MAIN_HDR ${SRC_PATH}/*.h)
@@ -28,6 +26,7 @@ else()
   set(ARCH_64 FALSE)
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
+add_definitions(-DSTBI_NO_STDIO -DSTBI_NO_PSD -DSTBI_NO_TGA -DSTBI_NO_GIF -DSTBI_NO_HDR -DSTBI_NO_PIC -DSTBI_NO_PNM -DSTBI_WRITE_NO_STDIO)
 if(UNIX OR MINGW)
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Werror")
 endif()

@@ -64,13 +64,25 @@ static PyObject* openImage(PyObject* self, PyObject* args)
 
     const void* read_buffer_data;
     Py_ssize_t n_read;
-    if (PyObject_AsReadBuffer(read_buffer,
-        &read_buffer_data, &n_read) == -1) {
-            PyErr_SetString(PyErr_Occurred(),
-                "The method 'read' of the Python file object "
-                "did not return a buffer.");
-            return NULL;
+#if PY_VERSION_HEX < 0x03000000
+    if (PyObject_AsReadBuffer(read_buffer, &read_buffer_data, &n_read) == -1) {
+        PyErr_SetString(PyErr_Occurred(),
+            "The method 'read' of the Python file object "
+            "did not return a buffer.");
+        return NULL;
     }
+#else
+    Py_buffer view;
+    if (PyObject_GetBuffer(read_buffer, &view, PyBUF_SIMPLE) != 0) {
+        PyErr_SetString(PyErr_Occurred(),
+            "The method 'read' of the Python file object "
+            "did not return a buffer.");
+        return NULL;
+    }
+    read_buffer_data = view.buf;
+    n_read = view.len;
+    PyBuffer_Release(&view);
+#endif
 
     Image* image = new Image((u8*)read_buffer_data, (u32)n_read);
     return PyImagingNew(image);
@@ -100,9 +112,9 @@ static PyObject* writeImage(PyObject* self, PyObject* args, PyObject* kwargs)
     char* format = NULL;
     int quality = 100;
 
-    static char *kwlist[] = { "img", "fp", "format", "quality", NULL };
+    static const char* const kwlist[] = { "img", "fp", "format", "quality", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|si", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|si", (char**)kwlist,
                                      &imgobj, &python_file, &format, &quality))
         return NULL;
 
@@ -120,7 +132,7 @@ static PyObject* writeImage(PyObject* self, PyObject* args, PyObject* kwargs)
     if (quality <= 0 || quality > 100)
         quality = 100;
 
-    ImageCompressed* compress;
+    ImageCompressed* compress = NULL;
     if (fmt == FORMAT_PNG)
         compress = ImageCompressed::Png(*img);
     else if (fmt == FORMAT_JPG)
