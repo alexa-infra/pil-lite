@@ -3,14 +3,11 @@ import glob
 import os
 import platform as plat
 import sys
-import fnmatch
-from distutils.errors import *
+from distutils.errors import DistutilsSetupError
 from distutils import log
-from distutils import sysconfig
-
-from setuptools import Extension, setup, find_packages
 from distutils.command.build_ext import build_ext
 from distutils.command.build_clib import build_clib
+from setuptools import Extension, setup, find_packages
 
 ARCH = plat.architecture()[0]
 ARCH_64 = ARCH in ["x86_64", "64bit"]
@@ -39,7 +36,6 @@ if WIN32:
 
 def python_defines(compiler):
     MSVC = compiler == 'msvc'
-    MINGW = compiler == 'mingw32'
     defs = []
     if WIN32:
         defs += [('MS_NO_COREDLL', None), ('Py_ENABLE_SHARED', None)]
@@ -54,7 +50,6 @@ class pil_lite_build_ext(build_ext):
         compiler = self.compiler.compiler_type
         MSVC = compiler == 'msvc'
         MINGW = compiler == 'mingw32'
-        GCC = compiler == 'unix'
         defs = []
         defs += python_defines(compiler)
         for e in self.extensions:
@@ -74,9 +69,9 @@ class pil_build_clib(build_clib):
             sources = build_info.get('sources')
             if sources is None or not isinstance(sources, (list, tuple)):
                 raise DistutilsSetupError(
-                       "in 'libraries' option (library '%s'), "
-                       "'sources' must be present and must be "
-                       "a list of source filenames" % lib_name)
+                    "in 'libraries' option (library '%s'), "
+                    "'sources' must be present and must be "
+                    "a list of source filenames" % lib_name)
             sources = list(sources)
 
             log.info("building '%s' library", lib_name)
@@ -106,25 +101,24 @@ NAME = 'Pil-Lite'
 PIL_LITE_VERSION = '0.0.7'
 
 setup(name=NAME,
-   version=PIL_LITE_VERSION,
-   description='Python Imaging Library Lite',
-   long_description=_read('README.rst'),
-   author='Alexey Vasilyev',
-   author_email='alexa.infra@gmail.com',
-   license='MIT',
-   url = 'https://github.com/alexa-infra/pil-lite',
-   download_url = 'https://github.com/alexa-infra/pil-lite/tarball/' + PIL_LITE_VERSION,
-   ext_modules=[mod],
-   packages=find_packages(),
-   libraries=[STB_LIB],
-   cmdclass={'build_ext':pil_lite_build_ext, 'build_clib':pil_build_clib},
-   zip_safe=True,
-   include_package_data=True,
-   keywords=["Imaging"],
-   platforms='Any',
-   classifiers=[
-     "Development Status :: 2 - Pre-Alpha",
-     "Topic :: Multimedia :: Graphics",
-     "Topic :: Multimedia :: Graphics :: Graphics Conversion",
-   ],
-)
+      version=PIL_LITE_VERSION,
+      description='Python Imaging Library Lite',
+      long_description=_read('README.rst'),
+      author='Alexey Vasilyev',
+      author_email='alexa.infra@gmail.com',
+      license='MIT',
+      url='https://github.com/alexa-infra/pil-lite',
+      download_url='https://github.com/alexa-infra/pil-lite/tarball/' + PIL_LITE_VERSION,
+      ext_modules=[mod],
+      packages=find_packages(),
+      libraries=[STB_LIB],
+      cmdclass={'build_ext':pil_lite_build_ext, 'build_clib':pil_build_clib},
+      zip_safe=True,
+      include_package_data=True,
+      keywords=["Imaging"],
+      platforms='Any',
+      classifiers=[
+          "Development Status :: 2 - Pre-Alpha",
+          "Topic :: Multimedia :: Graphics",
+          "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+      ])

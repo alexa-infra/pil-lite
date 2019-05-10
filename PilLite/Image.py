@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 
 from PilLiteExt import openImage, writeImage
 
@@ -43,7 +44,7 @@ class Image(object):
         Saves this image under the given filename. If no format is
         specified, the format to use is determined from the filename
         extension, if possible.
-        
+
         You can use a file object instead of a filename. The file object
         must implement the ``write`` method, and be opened in binary mode.
         """
@@ -102,8 +103,8 @@ class Image(object):
     def show(self):
         from tempfile import NamedTemporaryFile
         from subprocess import run
-        with NamedTemporaryFile() as fp:
-            writeImagePng(self.im, fp)
+        with NamedTemporaryFile(suffix='.png') as fp:
+            writeImage(self.im, fp, format='png')
             fp.flush()
             if sys.platform == 'linux':
                 run(['display', fp.name])

@@ -1,6 +1,6 @@
 import os
+from tempfile import TemporaryDirectory
 import pytest
-from tempfile import TemporaryDirectory, NamedTemporaryFile
 from PilLite import Image
 
 BASE_DIR = os.path.dirname(__file__)
