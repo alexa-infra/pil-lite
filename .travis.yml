@@ -7,7 +7,7 @@ python:
   - "2.7"
 
 install:
-  - pip install pytest
+  - pip install pytest backports.tempfile
   - pip install .
 
 script:

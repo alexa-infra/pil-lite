@@ -1,5 +1,8 @@
 import os
-from tempfile import TemporaryDirectory
+try:
+    from tempfile import TemporaryDirectory
+except ImportError:
+    from backports.tempfile import TemporaryDirectory
 import pytest
 from PilLite import Image
 
