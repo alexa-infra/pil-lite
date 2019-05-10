@@ -42,9 +42,12 @@ def missing_file():
     yield os.path.join(BASE_DIR, 'data', 'missing.png')
 
 
-@pytest.fixture
-def unsupported_file():
-    yield os.path.join(BASE_DIR, 'data', 'image.tif')
+@pytest.fixture(params=[
+    '.tif', '.tga'
+])
+def unsupported_file(request):
+    ext = request.param
+    yield os.path.join(BASE_DIR, 'data', 'image' + ext)
 
 
 def test_open(infile):
