@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 from PilLiteExt import openImage, writeImageJpeg, writeImagePng
 
@@ -97,3 +97,11 @@ class Image(object):
             y = int(h)
         self.im = self.im.resize(x, y)
 
+    def show(self):
+        from tempfile import NamedTemporaryFile
+        from subprocess import run
+        with NamedTemporaryFile() as fp:
+            writeImagePng(self.im, fp)
+            fp.flush()
+            if sys.platform == 'linux':
+                run(['display', fp.name])
