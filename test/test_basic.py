@@ -95,7 +95,7 @@ def test_thumbnail(png_file):
 
 
 def test_not_found(missing_file):
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(IOError):
         Image.open(missing_file)
 
 
