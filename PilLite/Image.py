@@ -21,8 +21,12 @@ def open(fp, mode='r'):
     if not hasattr(fp, 'read'):
         filename = fp
         with builtins.open(filename, 'rb') as f:
+            if not is_supported(f):
+                raise IOError('not supported image format')
             img = openImage(f)
     else:
+        if not is_supported(fp):
+            raise IOError('not supported image format')
         img = openImage(fp)
     if not img.isOk:
         raise IOError('Image open error: %s' % img.failureReason)
@@ -108,3 +112,28 @@ class Image(object):
             fp.flush()
             if sys.platform == 'linux':
                 run(['display', fp.name])
+
+def get_magic_mime(fp):
+    try:
+        pos = fp.tell()
+        data = fp.read(4)
+        if not data or len(data) != 4:
+            raise EOFError
+        return data
+    except EOFError:
+        return False
+    finally:
+        fp.seek(pos)
+
+def is_jpeg(buff):
+    return buff[:3] == b'\xFF\xD8\xFF'
+
+def is_bmp(buff):
+    return buff[:2] == b'BM'
+
+def is_png(buff):
+    return buff[:4] == b'\x89PNG'
+
+def is_supported(fp):
+    buff = get_magic_mime(fp)
+    return any(func(buff) for func in (is_jpeg, is_bmp, is_png))

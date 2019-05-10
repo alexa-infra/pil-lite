@@ -14,7 +14,7 @@ def tmpdir():
 
 
 @pytest.fixture(params=[
-    '.png', '.jpg', '.bmp', '.tga'
+    '.png', '.jpg', '.bmp'
 ], scope='function')
 def infile(request):
     ext = request.param
