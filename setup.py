@@ -29,14 +29,12 @@ SRC = MAIN_SRC
 
 INC_DIRS = [SRC_PATH, THIRDPARTY_PATH, STB_PATH]
 DEF_OPTS = [
-    ('STBI_NO_STDIO',),
     ('STBI_NO_PSD',),
     ('STBI_NO_TGA',),
     ('STBI_NO_GIF',),
     ('STBI_NO_HDR',),
     ('STBI_NO_PIC',),
     ('STBI_NO_PNM',),
-    ('STBI_WRITE_NO_STDIO',),
 ]
 PYVERSION = sys.version[0] + sys.version[2]
 LIBS = ['stb']
