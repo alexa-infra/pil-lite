@@ -1,6 +1,6 @@
 import os, sys
 
-from PilLiteExt import openImage, writeImageJpeg, writeImagePng
+from PilLiteExt import openImage, writeImage
 
 try:
     import builtins
@@ -62,13 +62,17 @@ class Image(object):
                 format = 'JPG'
             elif ext in ['.png']:
                 format = 'PNG'
+            elif ext in ['.bmp']:
+                format = 'BMP'
             else:
                 format = 'PNG'
 
         if format == 'PNG':
-            writeImagePng(self.im, fp)
+            writeImage(self.im, fp, format='png')
         elif format == 'JPG':
-            writeImageJpeg(self.im, fp)
+            writeImage(self.im, fp, format='jpg', quality=100)
+        elif format == 'BMP':
+            writeImage(self.im, fp, format='bmp')
         else:
             raise ValueError("bad format %r" % format)
         if infp != fp:

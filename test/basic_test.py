@@ -35,8 +35,10 @@ class TestBasic:
       in_file = os.path.join(self.initial, 'image' + ext)
       out_file_png = os.path.join(self.temp, 'image1.png')
       out_file_jpg = os.path.join(self.temp, 'image1.jpg')
+      out_file_bmp = os.path.join(self.temp, 'image1.bmp')
       yield self.open_and_save, in_file, out_file_png
       yield self.open_and_save, in_file, out_file_jpg
+      yield self.open_and_save, in_file, out_file_bmp
 
   @raises(IOError)
   def open_unsupported(self, in_file):

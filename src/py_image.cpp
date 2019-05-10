@@ -76,45 +76,34 @@ static PyObject* openImage(PyObject* self, PyObject* args)
     return PyImagingNew(image);
 }
 
-static PyObject* writeImageJpeg(PyObject* self, PyObject* args)
+enum ImgFormat { FORMAT_PNG, FORMAT_JPG, FORMAT_BMP, FORMAT_NONE };
+
+ImgFormat parseImgFormat(const char* format)
 {
-    PyObject* imgobj;
-    PyObject* python_file;
-
-    if (!PyArg_ParseTuple(args, "OO", &imgobj, &python_file))
-        return NULL;
-
-    Image* img = PyImaging_AsImaging(imgobj);
-
-    PyObject* py_write = PyObject_GetAttrString(python_file, "write");
-    if (py_write == NULL) {
-        PyErr_SetString(PyExc_AttributeError,
-            "That Python file object has no 'write' attribute");
-        return NULL;
+    if (strcmp(format, "png") == 0 || strcmp(format, "PNG") == 0) {
+        return FORMAT_PNG;
     }
-    ImageCompressed* compress = ImageCompressed::Jpeg(*img, 100);
-#if PY_VERSION_HEX < 0x03000000
-    PyObject* bufObj = PyBuffer_FromReadWriteMemory((char*)compress->buffer(), compress->size());
-#else
-    PyObject* bufObj = PyMemoryView_FromMemory((char*)compress->buffer(), compress->size(), PyBUF_READ);
-#endif
-    PyObject* callArgs = PyTuple_New(1);
-    PyTuple_SetItem(callArgs, 0, bufObj);
-    PyObject_CallObject(py_write, callArgs);
-    Py_DECREF(callArgs);
-
-    delete compress;
-
-    Py_INCREF(Py_None);
-    return Py_None;
+    if (strcmp(format, "jpg") == 0 || strcmp(format, "JPG") == 0) {
+        return FORMAT_JPG;
+    }
+    if (strcmp(format, "bmp") == 0 || strcmp(format, "BMP") == 0) {
+        return FORMAT_BMP;
+    }
+    return FORMAT_NONE;
 }
 
-static PyObject* writeImagePng(PyObject* self, PyObject* args)
+static PyObject* writeImage(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     PyObject* imgobj;
     PyObject* python_file;
 
-    if (!PyArg_ParseTuple(args, "OO", &imgobj, &python_file))
+    char* format = NULL;
+    int quality = 100;
+
+    static char *kwlist[] = { "img", "fp", "format", "quality", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|si", kwlist,
+                                     &imgobj, &python_file, &format, &quality))
         return NULL;
 
     Image* img = PyImaging_AsImaging(imgobj);
@@ -125,7 +114,20 @@ static PyObject* writeImagePng(PyObject* self, PyObject* args)
             "That Python file object has no 'write' attribute");
         return NULL;
     }
-    ImageCompressed* compress = ImageCompressed::Png(*img);
+    ImgFormat fmt = parseImgFormat(format);
+    if (fmt == FORMAT_NONE)
+        fmt = FORMAT_PNG;
+    if (quality <= 0 || quality > 100)
+        quality = 100;
+
+    ImageCompressed* compress;
+    if (fmt == FORMAT_PNG)
+        compress = ImageCompressed::Png(*img);
+    else if (fmt == FORMAT_JPG)
+        compress = ImageCompressed::Jpeg(*img, quality);
+    else if (fmt == FORMAT_BMP)
+        compress = ImageCompressed::Bmp(*img);
+
 #if PY_VERSION_HEX < 0x03000000
     PyObject* bufObj = PyBuffer_FromReadWriteMemory((char*)compress->buffer(), compress->size());
 #else
@@ -232,8 +234,7 @@ PyTypeObject Imaging_Type = {
 
 static PyMethodDef functions[] = {
     {"openImage", (PyCFunction)openImage, METH_VARARGS},
-    {"writeImageJpeg", (PyCFunction)writeImageJpeg, METH_VARARGS},
-    {"writeImagePng", (PyCFunction)writeImagePng, METH_VARARGS},
+    {"writeImage", (PyCFunction)writeImage, METH_VARARGS | METH_KEYWORDS},
     {NULL, NULL}
 };
 
