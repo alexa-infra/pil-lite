@@ -28,7 +28,16 @@ STB_SRC = glob.glob(os.path.join(STB_PATH, '*.c'))
 SRC = MAIN_SRC
 
 INC_DIRS = [SRC_PATH, THIRDPARTY_PATH, STB_PATH]
-DEF_OPTS = []
+DEF_OPTS = [
+    ('STBI_NO_STDIO',),
+    ('STBI_NO_PSD',),
+    ('STBI_NO_TGA',),
+    ('STBI_NO_GIF',),
+    ('STBI_NO_HDR',),
+    ('STBI_NO_PIC',),
+    ('STBI_NO_PNM',),
+    ('STBI_WRITE_NO_STDIO',),
+]
 PYVERSION = sys.version[0] + sys.version[2]
 LIBS = ['stb']
 if WIN32:
@@ -76,7 +85,8 @@ class pil_build_clib(build_clib):
 
             log.info("building '%s' library", lib_name)
 
-            macros = build_info.get('macros')
+            macros = build_info.get('macros', [])
+            macros += [(opt, ) for opt in DEF_OPTS]
             include_dirs = build_info.get('include_dirs')
             extra_args = build_info.get('extra_compile_args', [])
             if GCC or MINGW:
