@@ -1,7 +1,0 @@
-^src/_build/
-glob:*.pyc
-^build/
-^local/
-^PilLite.egg-info/
-^Pil_Lite.egg-info/
-^dist/
