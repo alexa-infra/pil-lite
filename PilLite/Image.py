@@ -64,8 +64,6 @@ class Image(object):
                 format = 'PNG'
             elif ext in ['.bmp']:
                 format = 'BMP'
-            else:
-                format = 'PNG'
 
         if format == 'PNG':
             writeImage(self.im, fp, format='png')
