@@ -1,3 +1,13 @@
+0.1.0
+
+- update stb_image (v2.22), stb_image_write (v1.13) and stb_image_resize (v0.96) libraries
+- bump python version to 3.7, set travis tests to 2.7 and 3.7 only
+- added Image.show function (linux 'display' only right now)
+- bmp output
+- replace nosetests with pytest
+- limit input formats to png, jpg and bmp
+- limit outpug formats to png, jpg and bmp
+
 0.0.7
 
 - update stb_image, stb_image_write and stb_image_resize libraries
