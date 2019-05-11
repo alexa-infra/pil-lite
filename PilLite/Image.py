@@ -47,7 +47,8 @@ def open(fp, mode='r'):
             raise IOError('not supported image format')
         img = _openImage(fp)
     if img.buffer == ffi.NULL:
-        raise IOError('Image open error: %s' % lib.image_failure_reason(img))
+        err = ffi.string(lib.image_failure_reason())
+        raise IOError('Image open error: %s' % err)
     image = Image()
     image.im = img
     return image
