@@ -4,8 +4,6 @@ include *.txt
 recursive-include PilLite *.py
 recursive-include src *.h
 recursive-include src *.c
-recursive-include src *.cpp
-recursive-include src *.hpp
-recursive-include src *.txt
+recursive-include src *.py
 recursive-include test *.py
 recursive-include test/data image.*

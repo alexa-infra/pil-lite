@@ -3,9 +3,7 @@ Build locally
 
 .. code:: bash
 
-    python setup.py clean
-    python setup.py build_clib
-    python setup.py build_ext --inplace
+    python src/py_ext_build.py
     PYTHONPATH=. pytest
 
 Another way to build locally
@@ -13,7 +11,7 @@ Another way to build locally
 
 .. code:: bash
 
-    pip install .
+    pip install -e .
     pytest
 
 And another way to build locally
