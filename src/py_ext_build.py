@@ -20,7 +20,16 @@ ffibuilder.set_source("PilLiteExt", """
         os.path.join(STB_DIR, 'stb_image.c'),
         os.path.join(STB_DIR, 'stb_image_resize.c'),
         os.path.join(STB_DIR, 'stb_image_write.c'),
-    ], include_dirs=[THIS_DIR, STB_DIR])
+    ],
+    include_dirs=[THIS_DIR, STB_DIR],
+    define_macros=[
+        ('STBI_NO_PSD', None),
+        ('STBI_NO_TGA', None),
+        ('STBI_NO_GIF', None),
+        ('STBI_NO_HDR', None),
+        ('STBI_NO_PIC', None),
+        ('STBI_NO_PNM', None),
+    ])
 
 if __name__ == "__main__":
     ffibuilder.compile()
