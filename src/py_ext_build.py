@@ -1,8 +1,14 @@
+import os
 from cffi import FFI
-ffibuilder = FFI()
 
-with open('lib.h', 'r') as f:
+THIS_DIR = os.path.dirname(__file__)
+STB_DIR = os.path.join(THIS_DIR, 'thirdparty', 'stb')
+
+
+with open(os.path.join(THIS_DIR, 'lib.h'), 'r') as f:
     ctext = f.read()
+
+ffibuilder = FFI()
 
 ffibuilder.cdef(ctext)
 
@@ -10,11 +16,11 @@ ffibuilder.set_source("_img", """
     #include "lib.h"
 """,
     sources=[
-        'lib.c',
-        'thirdparty/stb/stb_image.c',
-        'thirdparty/stb/stb_image_resize.c',
-        'thirdparty/stb/stb_image_write.c',
-    ], include_dirs=['thirdparty/stb/'])
+        os.path.join(THIS_DIR, 'lib.c'),
+        os.path.join(STB_DIR, 'stb_image.c'),
+        os.path.join(STB_DIR, 'stb_image_resize.c'),
+        os.path.join(STB_DIR, 'stb_image_write.c'),
+    ], include_dirs=[THIS_DIR, STB_DIR])
 
 if __name__ == "__main__":
     ffibuilder.compile(verbose=True)
