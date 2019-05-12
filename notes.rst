@@ -33,8 +33,7 @@ Release
 
 .. code:: bash
 
-    vim setup.py
-    vim PilLite/__init__.py
+    vim PilLite/__about__.py
     git commit -m "..."
     git tag -a 0.1.0 -m "version 0.1.0"
     git push origin master --tags
