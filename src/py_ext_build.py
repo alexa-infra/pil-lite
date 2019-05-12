@@ -12,7 +12,7 @@ ffibuilder = FFI()
 
 ffibuilder.cdef(ctext)
 
-ffibuilder.set_source("_img", """
+ffibuilder.set_source("PilLiteExt", """
     #include "lib.h"
 """,
     sources=[
@@ -23,4 +23,4 @@ ffibuilder.set_source("_img", """
     ], include_dirs=[THIS_DIR, STB_DIR])
 
 if __name__ == "__main__":
-    ffibuilder.compile(verbose=True)
+    ffibuilder.compile()

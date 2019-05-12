@@ -1,7 +1,7 @@
 import os
 import sys
 
-from _img import ffi, lib
+from PilLiteExt import ffi, lib
 
 try:
     import builtins

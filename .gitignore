@@ -8,4 +8,4 @@ dist/
 src/build/
 *.so
 *.o
-_img.c
+PilLiteExt.*
