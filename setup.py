@@ -5,13 +5,25 @@ from setuptools.command.test import test as TestCommand
 
 
 about = {}
-with open("PilLite/__about__.py") as fp:
+with open('PilLite/__about__.py') as fp:
     exec(fp.read(), about)
 
 
 CFFI_DEPENDENCY = 'cffi>=1.1'
 CFFI_MODULES = 'src/py_ext_build.py:ffibuilder'
 PYTEST_DEPENDENCY = 'pytest'
+CLASSIFIERS = """
+    Development Status :: 4 - Beta
+    License :: OSI Approved :: MIT License
+    Programming Language :: Python :: Implementation :: CPython
+    Programming Language :: Python :: Implementation :: PyPy
+    Programming Language :: Python :: 2
+    Programming Language :: Python :: 3
+    Topic :: Utilities
+    Topic :: Multimedia :: Graphics
+    Topic :: Multimedia :: Graphics :: Graphics Conversion
+"""
+CLASSIFIERS_LIST = [c.strip() for c in CLASSIFIERS.split('\n') if c]
 
 
 class PyTest(TestCommand):
@@ -47,10 +59,6 @@ setup(name=about['__title__'],
       install_requires=[CFFI_DEPENDENCY],
       cffi_modules=CFFI_MODULES,
       zip_safe=False,
-      keywords=["Imaging"],
+      keywords=['Imaging'],
       platforms='Any',
-      classifiers=[
-          "Development Status :: 2 - Pre-Alpha",
-          "Topic :: Multimedia :: Graphics",
-          "Topic :: Multimedia :: Graphics :: Graphics Conversion",
-      ])
+      classifiers=CLASSIFIERS_LIST)
