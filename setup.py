@@ -51,7 +51,7 @@ setup(name=about['__title__'],
           'PilLite',
       ],
       python_requires='>=2.7',
-      tests_requires=[PYTEST_DEPENDENCY],
+      tests_require=[PYTEST_DEPENDENCY],
       cmdclass={
           'test': PyTest,
       },
