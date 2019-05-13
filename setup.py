@@ -9,7 +9,6 @@ with open("PilLite/__about__.py") as fp:
     exec(fp.read(), about)
 
 
-PIL_LITE_VERSION = '0.1.0'
 CFFI_DEPENDENCY = 'cffi>=1.1'
 CFFI_MODULES = 'src/py_ext_build.py:ffibuilder'
 PYTEST_DEPENDENCY = 'pytest'

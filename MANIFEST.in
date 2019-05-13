@@ -1,5 +1,5 @@
 include *.py
-include *.rst
+include README.rst
 include *.txt
 recursive-include PilLite *.py
 recursive-include src *.h

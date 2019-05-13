@@ -14,20 +14,6 @@ Another way to build locally
     pip install -e .
     pytest
 
-And another way to build locally
---------------------------------
-
-.. code:: bash
-
-    apt-get install cmake
-    mkdir -p src/build
-    cd src/build
-    CMAKE_PREFIX_PATH=~/.pyenv/versions/3.7.3/ cmake -G"Unix Makefiles" ..
-    make
-    cp libPilLite.so ../../PilLiteExt.so
-    cd ../..
-    PYTHONPATH=. pytest
-
 Release
 -------
 
