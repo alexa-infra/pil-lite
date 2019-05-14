@@ -7,7 +7,7 @@ __title__ = 'Pil-Lite'
 __summary__ = 'Python Imaging Library Lite'
 __uri__ = 'https://github.com/alexa-infra/pil-lite'
 
-__version__ = '0.1.0'
+__version__ = '0.1.1-dev0'
 
 __author__ = 'Alexey Vasilyev'
 __email__ = 'alexey@alexadotlife.com'
