@@ -48,6 +48,8 @@ def open(fp, mode='r'):
         img = _openImage(fp)
     if img.buffer == ffi.NULL:
         err = ffi.string(lib.image_failure_reason())
+        if isinstance(err, bytes):
+            err = err.decode('utf-8')
         raise IOError('Image open error: %s' % err)
     image = Image()
     image.im = img
@@ -135,7 +137,7 @@ def get_magic_mime(fp):
             raise EOFError
         return data
     except EOFError:
-        return False
+        return None
     finally:
         fp.seek(pos)
 
@@ -150,4 +152,6 @@ def is_png(buff):
 
 def is_supported(fp):
     buff = get_magic_mime(fp)
+    if not buff:
+        return False
     return any(func(buff) for func in (is_jpeg, is_bmp, is_png))
