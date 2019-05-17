@@ -1,3 +1,11 @@
+0.1.1-dev0
+
+- build extension with CFFI
+- drop CPP extension code, rewrite it on C
+- drop cpython extension code
+- drop requirement to have python shared library
+- support pypy
+
 0.1.0
 
 - update stb_image (v2.22), stb_image_write (v1.13) and stb_image_resize (v0.96) libraries

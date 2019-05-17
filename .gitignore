@@ -7,3 +7,5 @@ Pil_Lite.egg-info/
 dist/
 src/build/
 *.so
+*.o
+PilLiteExt.*

@@ -1,13 +1,31 @@
 import os
 import sys
 
-from PilLiteExt import openImage, writeImage
+from PilLiteExt import ffi, lib
 
 try:
     import builtins
 except ImportError:
     import __builtin__
     builtins = __builtin__
+
+def _openImage(fp):
+    data = ffi.from_buffer('unsigned char[]', fp.read())
+    img = lib.image_open(data, len(data))
+    return ffi.gc(img, lib.image_free, img.width * img.height * img.components)
+
+def _writeImage(img, fp, format=None, quality=100):
+    if format in ('bmp', 'BMP'):
+        compressed = lib.image_to_bmp(img)
+    elif format in ('jpg', 'JPG', 'jpeg', 'JPEG'):
+        compressed = lib.image_to_jpg(img, quality)
+    elif format in ('png', 'PNG'):
+        compressed = lib.image_to_png(img)
+    else:
+        raise ValueError("bad format %r" % format)
+    data = ffi.buffer(compressed.buffer, compressed.size)
+    fp.write(bytes(data))
+    lib.image_compressed_free(compressed)
 
 def open(fp, mode='r'):
     """
@@ -23,13 +41,16 @@ def open(fp, mode='r'):
         with builtins.open(filename, 'rb') as f:
             if not is_supported(f):
                 raise IOError('not supported image format')
-            img = openImage(f)
+            img = _openImage(f)
     else:
         if not is_supported(fp):
             raise IOError('not supported image format')
-        img = openImage(fp)
-    if not img.isOk:
-        raise IOError('Image open error: %s' % img.failureReason)
+        img = _openImage(fp)
+    if img.buffer == ffi.NULL:
+        err = ffi.string(lib.image_failure_reason())
+        if isinstance(err, bytes):
+            err = err.decode('utf-8')
+        raise IOError('Image open error: %s' % err)
     image = Image()
     image.im = img
     return image
@@ -70,14 +91,7 @@ class Image(object):
             elif ext in ['.bmp']:
                 format = 'BMP'
 
-        if format == 'PNG':
-            writeImage(self.im, fp, format='png')
-        elif format == 'JPG':
-            writeImage(self.im, fp, format='jpg', quality=100)
-        elif format == 'BMP':
-            writeImage(self.im, fp, format='bmp')
-        else:
-            raise ValueError("bad format %r" % format)
+        _writeImage(self.im, fp, format=format, **kwargs)
         if infp != fp:
             fp.close()
 
@@ -85,7 +99,8 @@ class Image(object):
         """ Returns a resized copy of this image. """
         w, h = size
         image = Image()
-        image.im = self.im.resize(w, h)
+        resized = lib.image_resize(self.im, w, h)
+        image.im = ffi.gc(resized, lib.image_free, w * h * resized.components)
         return image
 
     def thumbnail(self, size):
@@ -102,13 +117,14 @@ class Image(object):
         if y > h:
             x = int(max(x * h / y, 1))
             y = int(h)
-        self.im = self.im.resize(x, y)
+        resized = self.resize((x, y))
+        self.im = resized.im
 
     def show(self):
         from tempfile import NamedTemporaryFile
         from subprocess import run
         with NamedTemporaryFile(suffix='.png') as fp:
-            writeImage(self.im, fp, format='png')
+            _writeImage(self.im, fp, format='png')
             fp.flush()
             if sys.platform == 'linux':
                 run(['display', fp.name])
@@ -121,7 +137,7 @@ def get_magic_mime(fp):
             raise EOFError
         return data
     except EOFError:
-        return False
+        return None
     finally:
         fp.seek(pos)
 
@@ -136,4 +152,6 @@ def is_png(buff):
 
 def is_supported(fp):
     buff = get_magic_mime(fp)
+    if not buff:
+        return False
     return any(func(buff) for func in (is_jpeg, is_bmp, is_png))
