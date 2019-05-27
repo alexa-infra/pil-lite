@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PilLiteExt import ffi, lib
+from PilLiteExt import ffi, lib # pylint: disable=no-name-in-module
 
 try:
     import builtins
@@ -9,48 +9,61 @@ except ImportError:
     import __builtin__
     builtins = __builtin__
 
-def _openImage(fp):
+BMP, JPG, PNG = FORMATS = ('bmp', 'jpg', 'png')
+
+EXT_FORMAT = {
+    '.jpeg': JPG,
+    '.jpg': JPG,
+    '.png': PNG,
+    '.bmp': BMP,
+}
+
+def _guess_format(filename):
+    _, ext = os.path.splitext(filename)
+    ext = ext.lower()
+    return EXT_FORMAT.get(ext, None)
+
+def _open_image(fp):
     data = ffi.from_buffer('unsigned char[]', fp.read())
     img = lib.image_open(data, len(data))
-    return ffi.gc(img, lib.image_free, img.width * img.height * img.components)
+    rv = ffi.gc(img, lib.image_free, img.width * img.height * img.components)
+    if rv.buffer == ffi.NULL:
+        err = ffi.string(lib.image_failure_reason())
+        if isinstance(err, bytes):
+            err = err.decode('utf-8')
+        raise IOError('Image open error: %s' % err)
+    return rv
 
-def _writeImage(img, fp, format=None, quality=100):
-    if format in ('bmp', 'BMP'):
-        compressed = lib.image_to_bmp(img)
-    elif format in ('jpg', 'JPG', 'jpeg', 'JPEG'):
-        compressed = lib.image_to_jpg(img, quality)
-    elif format in ('png', 'PNG'):
-        compressed = lib.image_to_png(img)
-    else:
-        raise ValueError("bad format %r" % format)
+FORMAT_HANDLERS = {
+    BMP: lib.image_to_bmp,
+    JPG: (lambda img: lib.image_to_jpg(img, 100)),
+    PNG: lib.image_to_png,
+}
+
+def _write_image(img, fp, fmt):
+    handler = FORMAT_HANDLERS[fmt]
+    compressed = handler(img)
     data = ffi.buffer(compressed.buffer, compressed.size)
     fp.write(bytes(data))
     lib.image_compressed_free(compressed)
 
-def open(fp, mode='r'):
+def open(fp, mode='r'): # pylint: disable=redefined-builtin
     """
     Opens, reads and decodes the given image file.
 
     You can use a file object instead of a filename. File object must
     implement ``read`` method, and be opened in binary mode.
     """
+    infp = fp
     if mode != 'r':
         raise ValueError("bad mode %r" % mode)
     if not hasattr(fp, 'read'):
-        filename = fp
-        with builtins.open(filename, 'rb') as f:
-            if not is_supported(f):
-                raise IOError('not supported image format')
-            img = _openImage(f)
-    else:
-        if not is_supported(fp):
-            raise IOError('not supported image format')
-        img = _openImage(fp)
-    if img.buffer == ffi.NULL:
-        err = ffi.string(lib.image_failure_reason())
-        if isinstance(err, bytes):
-            err = err.decode('utf-8')
-        raise IOError('Image open error: %s' % err)
+        fp = builtins.open(fp, 'rb')
+    if not is_supported(fp):
+        raise IOError('not supported image format')
+    img = _open_image(fp)
+    if infp != fp:
+        fp.close()
     image = Image()
     image.im = img
     return image
@@ -64,7 +77,7 @@ class Image(object):
         """ Returns the size of image, a tuple (width, height) """
         return (self.im.width, self.im.height)
 
-    def save(self, fp, format=None, **kwargs):
+    def save(self, fp, fmt=None):
         """
         Saves this image under the given filename. If no format is
         specified, the format to use is determined from the filename
@@ -82,16 +95,12 @@ class Image(object):
             filename = fp.name
         else:
             filename = ''
-        ext = os.path.splitext(filename)[1].lower()
-        if not format:
-            if ext in ['.jpg', '.jpeg']:
-                format = 'JPG'
-            elif ext in ['.png']:
-                format = 'PNG'
-            elif ext in ['.bmp']:
-                format = 'BMP'
+        if not fmt:
+            fmt = _guess_format(filename)
+        if fmt not in FORMATS:
+            raise ValueError("unsupported format %r" % fmt)
 
-        _writeImage(self.im, fp, format=format, **kwargs)
+        _write_image(self.im, fp, fmt)
         if infp != fp:
             fp.close()
 
@@ -124,7 +133,7 @@ class Image(object):
         from tempfile import NamedTemporaryFile
         from subprocess import run
         with NamedTemporaryFile(suffix='.png') as fp:
-            _writeImage(self.im, fp, format='png')
+            _write_image(self.im, fp, PNG)
             fp.flush()
             if sys.platform == 'linux':
                 run(['display', fp.name])

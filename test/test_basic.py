@@ -119,7 +119,7 @@ def test_save_unsupported2(png_file, tmpdir):
     img = Image.open(png_file)
     outfile = os.path.join(tmpdir, 'image')
     with pytest.raises(ValueError):
-        img.save(outfile, format='TIFF')
+        img.save(outfile, 'tiff')
 
 def test_corrupt_jpeg_failure_string():
     with pytest.raises(IOError) as err:
