@@ -24,10 +24,6 @@ void image_free(image* img) {
     free(img);
 }
 
-const char* image_failure_reason() {
-    return stbi_failure_reason();
-}
-
 image* image_resize(const image* src, int w, int h) {
     image* dst = (image*)malloc(sizeof(image));
     dst->own_memory = 1;

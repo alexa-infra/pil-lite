@@ -15,7 +15,6 @@ typedef struct {
 
 image* image_open(const unsigned char* data, int size);
 void image_free(image* img);
-const char* image_failure_reason();
 
 image* image_resize(const image* img, int w, int h);
 

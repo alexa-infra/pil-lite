@@ -24,8 +24,7 @@ def _open_image(fp):
     img = lib.image_open(data, len(data))
     rv = ffi.gc(img, lib.image_free, img.width * img.height * img.components)
     if rv.buffer == ffi.NULL:
-        err = ffi.string(lib.image_failure_reason())
-        raise IOError('Image open error: %s' % err.decode('utf-8'))
+        raise IOError('Image open error')
     return rv
 
 FORMAT_HANDLERS = {
