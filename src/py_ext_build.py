@@ -2,7 +2,7 @@ import os
 from cffi import FFI
 
 THIS_DIR = os.path.dirname(__file__)
-STB_DIR = os.path.join(THIS_DIR, 'thirdparty', 'stb')
+STB_DIR = os.path.join(THIS_DIR, 'stb')
 
 
 with open(os.path.join(THIS_DIR, 'lib.h'), 'r') as f:
