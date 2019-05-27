@@ -17,7 +17,7 @@ Pil-Lite
     img.save('ich.jpg')
 
 
-* supports python 2, python 3 and pypy
+* supports python 3 and pypy
 * works via cffi
 * library is existed thanks to `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
 

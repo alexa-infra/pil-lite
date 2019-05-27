@@ -17,7 +17,6 @@ CLASSIFIERS = """
     License :: OSI Approved :: MIT License
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
-    Programming Language :: Python :: 2
     Programming Language :: Python :: 3
     Topic :: Utilities
     Topic :: Multimedia :: Graphics
@@ -50,7 +49,7 @@ setup(name=about['__title__'],
       packages=[
           'PilLite',
       ],
-      python_requires='>=2.7',
+      python_requires='>=3',
       tests_require=[PYTEST_DEPENDENCY],
       cmdclass={
           'test': PyTest,

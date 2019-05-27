@@ -1,13 +1,9 @@
+import builtins
 import os
 import sys
 
 from PilLiteExt import ffi, lib # pylint: disable=no-name-in-module
 
-try:
-    import builtins
-except ImportError:
-    import __builtin__
-    builtins = __builtin__
 
 BMP, JPG, PNG = FORMATS = ('bmp', 'jpg', 'png')
 
@@ -29,9 +25,7 @@ def _open_image(fp):
     rv = ffi.gc(img, lib.image_free, img.width * img.height * img.components)
     if rv.buffer == ffi.NULL:
         err = ffi.string(lib.image_failure_reason())
-        if isinstance(err, bytes):
-            err = err.decode('utf-8')
-        raise IOError('Image open error: %s' % err)
+        raise IOError('Image open error: %s' % err.decode('utf-8'))
     return rv
 
 FORMAT_HANDLERS = {
@@ -68,7 +62,7 @@ def open(fp, mode='r'): # pylint: disable=redefined-builtin
     image.im = img
     return image
 
-class Image(object):
+class Image:
     def __init__(self):
         self.im = None
 

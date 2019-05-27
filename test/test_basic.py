@@ -1,9 +1,6 @@
 import os
 from io import BytesIO
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    from backports.tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory
 import pytest
 from PilLite import Image
 
