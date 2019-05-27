@@ -5,6 +5,7 @@
 - drop cpython extension code
 - drop requirement to have python shared library
 - support pypy
+- drop py2 support
 
 0.1.0
 
