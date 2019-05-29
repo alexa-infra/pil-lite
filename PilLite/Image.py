@@ -16,10 +16,24 @@ EXT_FORMAT = {
     '.bmp': BMP,
 }
 
+FORMAT_HANDLERS = {
+    BMP: lib.image_to_bmp,
+    JPG: (lambda img: lib.image_to_jpg(img, 100)),
+    PNG: lib.image_to_png,
+}
+
+FORMAT_MAGIC = {
+    JPG: b'\xFF\xD8\xFF',
+    BMP: b'BM',
+    PNG: b'\x89PNG',
+}
+
+
 def _guess_format(filename):
     _, ext = os.path.splitext(filename)
     ext = ext.lower()
     return EXT_FORMAT.get(ext, None)
+
 
 def _open_image(fp):
     data = ffi.from_buffer('unsigned char[]', fp.read())
@@ -29,11 +43,6 @@ def _open_image(fp):
         raise IOError('Image open error')
     return rv
 
-FORMAT_HANDLERS = {
-    BMP: lib.image_to_bmp,
-    JPG: (lambda img: lib.image_to_jpg(img, 100)),
-    PNG: lib.image_to_png,
-}
 
 def _write_image(img, fp, fmt):
     handler = FORMAT_HANDLERS[fmt]
@@ -41,6 +50,7 @@ def _write_image(img, fp, fmt):
     data = ffi.buffer(compressed.buffer, compressed.size)
     fp.write(bytes(data))
     lib.image_compressed_free(compressed)
+
 
 def open(fp, mode='r'): # pylint: disable=redefined-builtin
     """
@@ -62,6 +72,7 @@ def open(fp, mode='r'): # pylint: disable=redefined-builtin
     image = Image()
     image.im = img
     return image
+
 
 class Image:
     def __init__(self):
@@ -147,17 +158,9 @@ def _get_magic_mime(fp, n=4):
     finally:
         fp.seek(pos)
 
-def _is_jpeg(buff):
-    return buff[:3] == b'\xFF\xD8\xFF'
-
-def _is_bmp(buff):
-    return buff[:2] == b'BM'
-
-def _is_png(buff):
-    return buff[:4] == b'\x89PNG'
 
 def _is_supported(fp):
     buff = _get_magic_mime(fp)
     if not buff:
         return False
-    return any(func(buff) for func in (_is_jpeg, _is_bmp, _is_png))
+    return any(buff.startswith(magic) for magic in FORMAT_MAGIC.values())
