@@ -5,6 +5,8 @@ import sys
 from PilLiteExt import ffi, lib # pylint: disable=no-name-in-module
 
 
+__all__ = ['open']
+
 BMP, JPG, PNG = FORMATS = ('bmp', 'jpg', 'png')
 
 EXT_FORMAT = {
@@ -52,8 +54,8 @@ def open(fp, mode='r'): # pylint: disable=redefined-builtin
         raise ValueError("bad mode %r" % mode)
     if not hasattr(fp, 'read'):
         fp = builtins.open(fp, 'rb')
-    if not is_supported(fp):
-        raise IOError('not supported image format')
+    if not _is_supported(fp):
+        raise IOError('Image open error')
     img = _open_image(fp)
     if infp != fp:
         fp.close()
@@ -100,6 +102,8 @@ class Image:
     def resize(self, size):
         """ Returns a resized copy of this image. """
         w, h = size
+        if not w or not h:
+            raise ValueError('invalid size')
         image = Image()
         resized = lib.image_resize(self.im, w, h)
         image.im = ffi.gc(resized, lib.image_free, w * h * resized.components)
@@ -114,11 +118,11 @@ class Image:
         w, h = size
         x, y = self.size
         if x > w:
-            y = int(max(y * w / x, 1))
-            x = int(w)
+            ratio = y / x
+            x, y = w, int(ratio * w)
         if y > h:
-            x = int(max(x * h / y, 1))
-            y = int(h)
+            ratio = x / y
+            x, y = int(ratio * h), h
         resized = self.resize((x, y))
         self.im = resized.im
 
@@ -131,29 +135,29 @@ class Image:
             if sys.platform == 'linux':
                 run(['display', fp.name])
 
-def get_magic_mime(fp):
+def _get_magic_mime(fp, n=4):
     try:
         pos = fp.tell()
-        data = fp.read(4)
-        if not data or len(data) != 4:
-            raise EOFError
+        data = fp.read(n)
+        if not data or len(data) != n:
+            return None
         return data
     except EOFError:
         return None
     finally:
         fp.seek(pos)
 
-def is_jpeg(buff):
+def _is_jpeg(buff):
     return buff[:3] == b'\xFF\xD8\xFF'
 
-def is_bmp(buff):
+def _is_bmp(buff):
     return buff[:2] == b'BM'
 
-def is_png(buff):
+def _is_png(buff):
     return buff[:4] == b'\x89PNG'
 
-def is_supported(fp):
-    buff = get_magic_mime(fp)
+def _is_supported(fp):
+    buff = _get_magic_mime(fp)
     if not buff:
         return False
-    return any(func(buff) for func in (is_jpeg, is_bmp, is_png))
+    return any(func(buff) for func in (_is_jpeg, _is_bmp, _is_png))

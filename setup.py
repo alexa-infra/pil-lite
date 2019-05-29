@@ -5,8 +5,12 @@ from setuptools.command.test import test as TestCommand
 
 
 about = {}
-with open('PilLite/__about__.py') as fp:
+with io.open('PilLite/__about__.py', encoding='utf-8') as fp:
     exec(fp.read(), about)
+about = {
+    k.strip('_'): v for k, v in about.items() if k not in ('__builtins__', '__all__')}
+with io.open('README.rst', encoding='utf-8') as fp:
+    readme = fp.read()
 
 
 CFFI_DEPENDENCY = 'cffi>=1.1'
@@ -37,15 +41,15 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-setup(name=about['__title__'],
-      version=about['__version__'],
-      description=about['__summary__'],
-      long_description=io.open('README.rst', encoding='utf-8').read(),
-      author=about['__author__'],
-      author_email=about['__email__'],
-      license=about['__license__'],
-      url=about['__uri__'],
-      download_url='{}/tarball/{}'.format(about['__uri__'], about['__version__']),
+setup(name=about['title'],
+      version=about['version'],
+      description=about['summary'],
+      long_description=readme,
+      author=about['author'],
+      author_email=about['email'],
+      license=about['license'],
+      url=about['uri'],
+      download_url='{}/tarball/{}'.format(about['uri'], about['version']),
       packages=[
           'PilLite',
       ],

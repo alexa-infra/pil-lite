@@ -76,6 +76,13 @@ def test_open_and_save_file_descriptor(infile, outfile):
     assert img.size == SIZE
 
 
+def test_bytes_io(png_file):
+    with open(png_file, 'rb') as fd:
+        data = BytesIO(fd.read())
+    img = Image.open(data)
+    assert img.size == SIZE
+
+
 @pytest.fixture(params=[(128, 90), (512, 360)])
 def resize(request):
     yield request.param
@@ -118,26 +125,35 @@ def test_save_unsupported2(png_file, tmpdir):
     with pytest.raises(ValueError):
         img.save(outfile, 'tiff')
 
-def test_corrupt_jpeg_failure_string():
-    with pytest.raises(IOError) as err:
-        data = BytesIO(b'\xFF\xD8\xFF\xD9')
-        Image.open(data)
-        assert err.msg == 'Image open error: Corrupt JPEG'
 
-def test_corrupt_bmp_failure_string():
-    with pytest.raises(IOError) as err:
-        data = BytesIO(b'BM\xFF\xFF')
-        Image.open(data)
-        assert err.msg == 'Image open error: Corrupt BMP'
+@pytest.fixture(params=[
+    b'\xFF\xD8\xFF\xD9',
+    b'BM\xFF\xFF',
+    b'\x89PNG\xFF\xFF',
+    b'\xA0\xB0',
+])
+def broken_data(request):
+    yield request.param
 
-def test_corrupt_png_failure_string():
-    with pytest.raises(IOError) as err:
-        data = BytesIO(b'\x89PNG\xFF\xFF')
-        Image.open(data)
-        assert err.msg == 'Image open error: Corrupt PNG'
 
-def test_corrupt_image():
-    with pytest.raises(IOError) as err:
-        data = BytesIO(b'\xA0\xB0')
+def test_corrupt_png_failure_string(broken_data):
+    with pytest.raises(IOError, match='Image open error'):
+        data = BytesIO(broken_data)
         Image.open(data)
-        assert err.msg == 'not supported image format'
+
+
+@pytest.fixture(params=[(0, 100), (100, 0)])
+def broken_size(request):
+    yield request.param
+
+
+def test_invalid_size_resize(png_file, broken_size):
+    with pytest.raises(ValueError, match='invalid size'):
+        img = Image.open(png_file)
+        img.resize(broken_size)
+
+
+def test_invalid_size_thumbnail(png_file, broken_size):
+    with pytest.raises(ValueError, match='invalid size'):
+        img = Image.open(png_file)
+        img.thumbnail(broken_size)
