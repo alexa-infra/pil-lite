@@ -5,7 +5,7 @@ import sys
 from PilLiteExt import ffi, lib # pylint: disable=no-name-in-module
 
 
-__all__ = ['open']
+__all__ = ['open', 'new']
 
 BMP, JPG, PNG = FORMATS = ('bmp', 'jpg', 'png')
 
@@ -52,6 +52,14 @@ def _write_image(img, fp, fmt):
     lib.image_compressed_free(compressed)
 
 
+def _new_image(w, h, c):
+    img = lib.image_new(w, h, c)
+    rv = ffi.gc(img, lib.image_free, img.width * img.height * img.components)
+    if rv.buffer == ffi.NULL:
+        raise IOError('Image create error')
+    return rv
+
+
 def open(fp, mode='r'): # pylint: disable=redefined-builtin
     """
     Opens, reads and decodes the given image file.
@@ -71,6 +79,16 @@ def open(fp, mode='r'): # pylint: disable=redefined-builtin
         fp.close()
     image = Image()
     image.im = img
+    return image
+
+
+def new(w, h, fmt, bg):
+    if fmt not in ('RGB', 'RGBA', 'L', 'LA'):
+        raise ValueError('invalid format')
+    c = len(fmt)
+    image = Image()
+    image.im = _new_image(w, h, c)
+    lib.image_draw_rect(image.im, 0, 0, w, h, bg)
     return image
 
 
@@ -145,6 +163,23 @@ class Image:
             fp.flush()
             if sys.platform == 'linux':
                 run(['display', fp.name])
+
+    def put_pixel(self, coord, color):
+        """ Draws pixel at (x, y) coord """
+        x, y = coord
+        lib.image_put_pixel(self.im, x, y, color)
+
+    def get_pixel(self, coord):
+        """ Get pixel at (x, y) coord """
+        x, y = coord
+        return lib.image_get_pixel(self.im, x, y)
+
+    def draw_rect(self, coord, size, color):
+        """ Draws rectagnle at (x, y) coord with (w, h) size"""
+        x, y = coord
+        w, h = size
+        return lib.image_draw_rect(self.im, x, y, w, h, color)
+
 
 def _get_magic_mime(fp, n=4):
     try:
