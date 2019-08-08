@@ -7,8 +7,9 @@ python:
   - "pypy3.6-7.1.1"
 
 install:
-  - pip install pytest
+  - pip install pytest mypy
   - pip install .
 
 script:
   - pytest
+  - mypy PilLite/

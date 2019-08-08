@@ -6,6 +6,7 @@
 - drop requirement to have python shared library
 - support pypy
 - drop py2 support
+- py3.5+ type annotations
 
 0.1.0
 
