@@ -62,16 +62,20 @@ def open(fp: Union[str, BinaryIO], **_kwargs: Any) -> 'Image': # pylint: disable
     You can use a file object instead of a filename. File object must
     implement ``read`` method, and be opened in binary mode.
     """
-    infp = fp
-    if not hasattr(fp, 'read'):
-        fp = cast(str, fp)
+    if isinstance(fp, str):
         fp = builtins.open(fp, 'rb')
-    fp = cast(BinaryIO, fp)
-    if not _is_supported(fp):
-        raise IOError('Image open error')
-    img = _open_image(fp)
-    if infp != fp:
-        fp.close()
+        try:
+            if not _is_supported(fp):
+                raise IOError('Image open error')
+            img = _open_image(fp)
+        finally:
+            fp.close()
+    elif hasattr(fp, 'read'):
+        if not _is_supported(fp):
+            raise IOError('Image open error')
+        img = _open_image(fp)
+    else:
+        raise ValueError
     image = Image()
     image.im = img
     return image
@@ -90,7 +94,7 @@ class Image:
             raise ValueError
         return (self.im.width, self.im.height)
 
-    def save(self, fp: Union[str, BinaryIO], fmt: str = None) -> None:
+    def save(self, fp: Union[str, BinaryIO], fmt: Optional[str] = None) -> None:
         """
         Saves this image under the given filename. If no format is
         specified, the format to use is determined from the filename
@@ -102,25 +106,26 @@ class Image:
         if not self.im:
             raise ValueError
 
-        infp = fp
-        filename = None
-        if not hasattr(fp, 'write'):
-            filename = cast(str, fp)
+        if isinstance(fp, str):
+            filename = fp
             fp = builtins.open(filename, 'wb')
-        elif hasattr(fp, 'name'):
-            filename = getattr(fp, 'name')
+            try:
+                if not fmt:
+                    fmt = _guess_format(filename)
+                if fmt not in FORMATS:
+                    raise ValueError(f'unsupported format {fmt}')
+                _write_image(self.im, fp, fmt)
+            finally:
+                fp.close()
+        elif hasattr(fp, 'write'):
+            if not fmt and hasattr(fp, 'name'):
+                filename = getattr(fp, 'name')
+                fmt = _guess_format(filename)
+            if fmt not in FORMATS:
+                raise ValueError(f'unsupported format {fmt}')
+            _write_image(self.im, fp, fmt)
         else:
-            filename = ''
-        filename = cast(str, filename)
-        if not fmt:
-            fmt = _guess_format(filename)
-        if fmt not in FORMATS:
-            raise ValueError("unsupported format %r" % fmt)
-
-        fp = cast(BinaryIO, fp)
-        _write_image(self.im, fp, fmt)
-        if infp != fp:
-            fp.close()
+            raise ValueError
 
     def resize(self, size: Tuple[int, int]) -> 'Image':
         """ Returns a resized copy of this image. """
