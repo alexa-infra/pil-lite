@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from PilLiteExt.lib import ImageExt, ImageCompExt
 
 
-__all__ = ['open']
+__all__ = ['open', 'new']
 
 BMP, JPG, PNG = FORMATS = ('bmp', 'jpg', 'png')
 
@@ -55,6 +55,14 @@ def _write_image(img: 'ImageExt', fp: BinaryIO, fmt: str) -> None:
     lib.image_compressed_free(compressed)
 
 
+def _new_image(w: int, h: int, c: int) -> 'ImageExt':
+    img = lib.image_new(w, h, c)
+    rv = ffi.gc(img, lib.image_free, img.width * img.height * img.components)
+    if rv.buffer == ffi.NULL:
+        raise IOError('Image create error')
+    return rv
+
+
 def open(fp: Union[str, BinaryIO], **_kwargs: Any) -> 'Image': # pylint: disable=redefined-builtin
     """
     Opens, reads and decodes the given image file.
@@ -78,6 +86,16 @@ def open(fp: Union[str, BinaryIO], **_kwargs: Any) -> 'Image': # pylint: disable
         raise ValueError
     image = Image()
     image.im = img
+    return image
+
+
+def new(w: int, h: int, fmt: str, bg: int) -> 'Image':
+    if fmt not in ('RGB', 'RGBA', 'L', 'LA'):
+        raise ValueError('invalid format')
+    c = len(fmt)
+    image = Image()
+    image.im = _new_image(w, h, c)
+    lib.image_draw_rect(image.im, 0, 0, w, h, bg)
     return image
 
 
@@ -170,6 +188,28 @@ class Image:
             fp.flush()
             if sys.platform == 'linux':
                 run(['display', fp.name])
+
+    def put_pixel(self, coord: Tuple[int, int], color: int) -> None:
+        """ Draws pixel at (x, y) coord """
+        if not self.im:
+            raise ValueError
+        x, y = coord
+        lib.image_put_pixel(self.im, x, y, color)
+
+    def get_pixel(self, coord: Tuple[int, int]) -> int:
+        """ Get pixel at (x, y) coord """
+        if not self.im:
+            raise ValueError
+        x, y = coord
+        return lib.image_get_pixel(self.im, x, y)
+
+    def draw_rect(self, coord: Tuple[int, int], size: Tuple[int, int], color: int) -> None:
+        """ Draws rectagnle at (x, y) coord with (w, h) size"""
+        if not self.im:
+            raise ValueError
+        x, y = coord
+        w, h = size
+        lib.image_draw_rect(self.im, x, y, w, h, color)
 
 
 def _get_magic_mime(fp: BinaryIO, n: int = 4) -> Optional[bytes]:
