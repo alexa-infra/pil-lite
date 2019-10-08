@@ -27,3 +27,5 @@ image* image_new(int w, int h, int components);
 unsigned int image_get_pixel(const image* src, int x, int y);
 void image_put_pixel(image* dst, int x, int y, unsigned int color);
 void image_draw_rect(image* dst, int x1, int y1, int w, int h, unsigned int color);
+
+image* image_new_raw(const unsigned char* data, int w, int h, int components);

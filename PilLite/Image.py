@@ -1,14 +1,14 @@
 import builtins
 import os
 import sys
-from typing import Optional, Any, Tuple, Union, BinaryIO, cast, TYPE_CHECKING
+from typing import Optional, Any, Tuple, Union, Dict, BinaryIO, cast, TYPE_CHECKING
 
 from PilLiteExt import ffi, lib # pylint: disable=no-name-in-module
 if TYPE_CHECKING:
     from PilLiteExt.lib import ImageExt, ImageCompExt
 
 
-__all__ = ['open', 'new']
+__all__ = ['open', 'new', 'fromarray']
 
 BMP, JPG, PNG = FORMATS = ('bmp', 'jpg', 'png')
 
@@ -63,6 +63,15 @@ def _new_image(w: int, h: int, c: int) -> 'ImageExt':
     return rv
 
 
+def _new_image_raw(data: bytes, w: int, h: int, c: int) -> 'ImageExt':
+    buf = ffi.from_buffer('unsigned char[]', data)
+    img = lib.image_new_raw(buf, w, h, c)
+    rv = ffi.gc(img, lib.image_free, img.width * img.height * img.components)
+    if rv.buffer == ffi.NULL:
+        raise IOError('Image create error')
+    return rv
+
+
 def open(fp: Union[str, BinaryIO], **_kwargs: Any) -> 'Image': # pylint: disable=redefined-builtin
     """
     Opens, reads and decodes the given image file.
@@ -90,12 +99,38 @@ def open(fp: Union[str, BinaryIO], **_kwargs: Any) -> 'Image': # pylint: disable
 
 
 def new(w: int, h: int, fmt: str, bg: int) -> 'Image':
+    """
+    Creates new image by given size and format
+    and fills it with bg color
+    """
     if fmt not in ('RGB', 'RGBA', 'L', 'LA'):
         raise ValueError('invalid format')
     c = len(fmt)
     image = Image()
     image.im = _new_image(w, h, c)
     lib.image_draw_rect(image.im, 0, 0, w, h, bg)
+    return image
+
+
+def fromarray(obj: Any) -> 'Image':
+    """ Creates new image from numpy array """
+    if not hasattr(obj, '__array_interface__'):
+        raise ValueError
+    if str(obj.dtype) != 'uint8':
+        raise ValueError
+    shape = obj.shape
+    if len(shape) == 2:
+        w, h = shape
+        components = 1
+    elif len(shape) == 3:
+        w, h, components = shape
+        if components not in (1, 2, 3, 4):
+            raise ValueError
+    else:
+        raise ValueError
+    img = _new_image_raw(obj.tobytes(), w, h, components)
+    image = Image()
+    image.im = img
     return image
 
 
@@ -210,6 +245,26 @@ class Image:
         x, y = coord
         w, h = size
         lib.image_draw_rect(self.im, x, y, w, h, color)
+
+    def tobytes(self) -> bytes:
+        """ Raw bytes of image data """
+        if not self.im:
+            raise ValueError
+        size = self.im.width * self.im.height * self.im.components
+        return ffi.buffer(self.im.buffer, size)
+
+    @property
+    def __array_interface__(self) -> Dict:
+        """ Numpy array support """
+        if not self.im:
+            raise ValueError
+        w, h, components = self.im.width, self.im.height, self.im.components
+        return {
+            'version': 3,
+            'shape': (w, h, components),
+            'typestr': '|u1',
+            'data': self.tobytes(),
+        }
 
 
 def _get_magic_mime(fp: BinaryIO, n: int = 4) -> Optional[bytes]:

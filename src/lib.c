@@ -170,3 +170,14 @@ void image_draw_rect(image* dst, int x1, int y1, int w, int h, unsigned int colo
         }
     }
 }
+
+image* image_new_raw(const unsigned char* data, int w, int h, int components) {
+    image* dst = (image*)malloc(sizeof(image));
+    dst->own_memory = 1;
+    dst->width = w;
+    dst->height = h;
+    dst->components = components;
+    dst->buffer = (unsigned char*)malloc(w * h * components);
+    memcpy(dst->buffer, data, w * h * components);
+    return dst;
+}
