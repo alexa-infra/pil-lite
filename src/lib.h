@@ -1,5 +1,3 @@
-#pragma once
-
 typedef struct {
     unsigned char* buffer;
     int own_memory;

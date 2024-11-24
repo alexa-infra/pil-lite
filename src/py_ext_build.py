@@ -18,7 +18,7 @@ ffibuilder.set_source("PilLiteExt", """
     sources=[
         os.path.join(THIS_DIR, 'lib.c'),
         os.path.join(STB_DIR, 'stb_image.c'),
-        os.path.join(STB_DIR, 'stb_image_resize.c'),
+        os.path.join(STB_DIR, 'stb_image_resize2.c'),
         os.path.join(STB_DIR, 'stb_image_write.c'),
     ],
     include_dirs=[THIS_DIR, STB_DIR],

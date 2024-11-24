@@ -7,6 +7,10 @@ Pil-Lite
 * supports only trivial subset of formats (JPEG, PNG, BMP, 8 bit per channel)
 * no image editing functionality (as well as many other things)
 * basically interface has only *open*, *save*, *resize* and *thumbnail* functions
+* is based on `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
+* provides cffi python bindings for stb_image libraries
+* potentially **insecure**, should be used only with well-known sources of images
+* **in production it's recommended to use PIL/Pillow libraries**
 
 .. code:: python
 
@@ -17,10 +21,4 @@ Pil-Lite
     img.save('ich.jpg')
 
 
-* supports python 3 and pypy
-* works via cffi
-* library is existed thanks to `stb_image.h, stb_image_write.h, stb_image_resize.h libraries <https://github.com/nothings/stb>`_
-
-.. image:: https://travis-ci.org/alexa-infra/pil-lite.svg
-   :target: https://travis-ci.org/alexa-infra/pil-lite
-   :alt: Travis CI build status
+Powered by ❤️

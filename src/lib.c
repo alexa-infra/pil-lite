@@ -4,7 +4,7 @@
 //#include <stdio.h> // printf
 #include "stb_image.h"
 #include "stb_image_write.h"
-#include "stb_image_resize.h"
+#include "stb_image_resize2.h"
 
 image* image_open(const unsigned char* data, int size) {
     image* img = (image*)malloc(sizeof(image));
@@ -26,9 +26,9 @@ void image_free(image* img) {
 
 image* image_resize(const image* src, int w, int h) {
     image* dst = image_new(w, h, src->components);
-    stbir_resize_uint8(src->buffer, src->width, src->height, src->width * src->components,
+    stbir_resize_uint8_linear(src->buffer, src->width, src->height, src->width * src->components,
         dst->buffer, dst->width, dst->height, dst->width * dst->components,
-        dst->components);
+        (stbir_pixel_layout)dst->components);
     return dst;
 }
 

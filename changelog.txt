@@ -1,3 +1,8 @@
+0.1.3
+
+- security notice
+- update stb_image (v2.30), stb_image_write (v1.16) and stb_image_resize (v2.12) library
+
 0.1.2
 
 - pyproject.toml
