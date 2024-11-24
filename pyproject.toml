@@ -1,0 +1,36 @@
+[build-system]
+requires = [
+    "setuptools>=45",
+    "cffi>=1.1",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Pil-Lite"
+authors = [{ name="Alexey Vasilyev", email="alexey@alexadotlife.com" }]
+description = "Python Imaging Library Lite"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 4 - Beta",
+    "Topic :: Utilities",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+]
+dependencies = ["cffi>=1.1"]
+dynamic = ["version", "readme"]
+
+[project.urls]
+Homepage = "https://github.com/alexa-infra/pil-lite"
+Issues = "https://github.com/alexa-infra/pil-lite/issues"
+
+[project.optional-dependencies]
+tests = ["pytest"]
+
+[tool.setuptools.dynamic]
+version = {attr = "PilLite.__version__"}
+readme = {file = ["README.rst"]}

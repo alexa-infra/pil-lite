@@ -3,7 +3,8 @@ Build locally
 
 .. code:: bash
 
-    python src/py_ext_build.py
+    pip install cffi setuptools pytest
+    PYTHONPATH=. python src/py_ext_build.py
     PYTHONPATH=. pytest
 
 Another way to build locally
@@ -11,6 +12,7 @@ Another way to build locally
 
 .. code:: bash
 
+    pip install pytest
     pip install -e .
     pytest
 

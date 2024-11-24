@@ -1,3 +1,7 @@
+0.1.2
+
+- pyproject.toml
+
 0.1.1
 
 - build extension with CFFI
